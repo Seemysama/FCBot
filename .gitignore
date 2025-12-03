@@ -17,3 +17,5 @@ active_session.json
 # OS
 .DS_Store
 Thumbs.db
+discord_token.txt
+active_session.json

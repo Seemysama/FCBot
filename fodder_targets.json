@@ -3,9 +3,9 @@
   "targets": [
     {
       "rating": 83,
-      "max_buy": 650,
-      "sell_price": 900,
-      "estimated_profit": 205
+      "max_buy": 700,
+      "sell_price": 950,
+      "estimated_profit": 202
     },
     {
       "rating": 84,
@@ -15,50 +15,50 @@
     },
     {
       "rating": 85,
-      "max_buy": 2350,
-      "sell_price": 2700,
-      "estimated_profit": 215
+      "max_buy": 2450,
+      "sell_price": 2800,
+      "estimated_profit": 210
     },
     {
       "rating": 86,
-      "max_buy": 4450,
-      "sell_price": 4900,
-      "estimated_profit": 205
+      "max_buy": 4600,
+      "sell_price": 5100,
+      "estimated_profit": 245
     },
     {
       "rating": 87,
-      "max_buy": 7550,
-      "sell_price": 8200,
-      "estimated_profit": 240
+      "max_buy": 7950,
+      "sell_price": 8600,
+      "estimated_profit": 220
     },
     {
       "rating": 88,
-      "max_buy": 11650,
-      "sell_price": 12500,
-      "estimated_profit": 225
+      "max_buy": 11200,
+      "sell_price": 12000,
+      "estimated_profit": 200
     },
     {
       "rating": 89,
-      "max_buy": 19750,
-      "sell_price": 21000,
-      "estimated_profit": 200
+      "max_buy": 19000,
+      "sell_price": 20250,
+      "estimated_profit": 237
     },
     {
       "rating": 90,
-      "max_buy": 28300,
-      "sell_price": 30000,
-      "estimated_profit": 200
+      "max_buy": 29000,
+      "sell_price": 30750,
+      "estimated_profit": 212
     },
     {
       "rating": 91,
-      "max_buy": 78650,
-      "sell_price": 83000,
+      "max_buy": 66300,
+      "sell_price": 70000,
       "estimated_profit": 200
     },
     {
       "rating": 92,
-      "max_buy": 86700,
-      "sell_price": 91500,
+      "max_buy": 89550,
+      "sell_price": 94500,
       "estimated_profit": 225
     }
   ]
