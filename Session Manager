@@ -1,0 +1,120 @@
+import time
+import json
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+
+# CONFIGURATION
+WEB_APP_URL = "https://www.ea.com/fifa/ultimate-team/web-app/"
+# Ce fichier servira de pont entre l'auth et le worker
+SESSION_FILE = "active_session.json" 
+
+class EASessionManager:
+    def __init__(self):
+        self.driver = None
+        self.auth_data = {
+            "x-ut-sid": None,
+            "nucleus_id": None,
+            "phishing_token": None
+        }
+
+    def start_browser(self):
+        """Lance un navigateur Chrome 'propre' pour passer les contrôles EA/Arkose"""
+        options = webdriver.ChromeOptions()
+        # options.add_argument("--headless") # NE PAS ACTIVER pour le login (détecté)
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)...")
+        
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
+    def login_and_intercept(self):
+        print("[SYSTEM] Lancement du navigateur pour Authentification Manuelle...")
+        self.driver.get(WEB_APP_URL)
+        
+        print("[ACTION] Connecte-toi manuellement au compte EA dans la fenêtre ouverte.")
+        print("[WAITING] En attente de la détection du chargement de l'App...")
+
+        # On attend que l'élément principal du Web App soit chargé (preuve que le login est OK)
+        try:
+            WebDriverWait(self.driver, 300).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".ut-click-shield"))
+            )
+            print("[SUCCESS] Login détecté. Extraction des tokens...")
+            
+            # Méthode : On execute du JS dans le contexte du navigateur pour voler les données locales
+            # EA stocke souvent le SID dans le LocalStorage ou les Cookies
+            self.extract_tokens_from_browser()
+            
+        except Exception as e:
+            print(f"[ERROR] Timeout ou échec du login : {e}")
+        finally:
+            self.driver.quit()
+
+    def extract_tokens_from_browser(self):
+        # Récupération des logs de performance pour trouver le header X-UT-SID dans les requêtes réseaux
+        # Note : Nécessite que le driver soit configuré avec 'goog:loggingPrefs' en prod.
+        # Ici, méthode simplifiée via LocalStorage si accessible, sinon Cookie dump.
+        
+        # Approche Robuste : Dump des Cookies
+        cookies = self.driver.get_cookies()
+        
+        # Recherche spécifique du SID dans les cookies ou exécution JS
+        # EA change souvent l'endroit, mais c'est souvent stocké dans une variable globale JS injectée
+        # Pour cet exemple, on simule l'extraction via une routine JS
+        
+        # Simulation extraction (En prod, on parse window.services.Authentication.token)
+        sid = self.driver.execute_script("return 'simulated_extracted_sid_' + Date.now();") 
+        
+        self.auth_data["x-ut-sid"] = sid
+        self.auth_data["user_agent"] = self.driver.execute_script("return navigator.userAgent;")
+        
+        self.save_session()
+
+    def save_session(self):
+        with open(SESSION_FILE, 'w') as f:
+            json.dump(self.auth_data, f)
+        print(f"[SYSTEM] Session sauvegardée dans {SESSION_FILE}. Le Worker peut démarrer.")
+
+# --- MODULE D'EXÉCUTION (BIDDING) ---
+# À intégrer dans ton Worker Scraper
+
+def execute_bid(session, player_id, trade_id, price):
+    """
+    Envoie l'ordre d'achat à EA.
+    trade_id : L'ID unique de la vente (récupéré lors du scan)
+    """
+    url = f"https://ut-market.ea.com/ut/game/fifa24/trade/{trade_id}/bid"
+    
+    payload = {"bid": price}
+    
+    # Headers critiques pour l'achat
+    headers = {
+        "X-UT-SID": session.headers.get("X-UT-SID"),
+        "Content-Type": "application/json",
+        "X-HTTP-Method-Override": "PUT" # Souvent requis par EA
+    }
+    
+    try:
+        resp = session.put(url, json=payload, headers=headers, timeout=2)
+        
+        if resp.status_code == 200:
+            print(f"[$$$] ENCHÈRE PLACÉE : {price} sur {player_id}")
+            return True
+        elif resp.status_code == 461:
+            print("[FAIL] Outbid (Trop lent)")
+        elif resp.status_code == 429:
+            print("[ALERT] Rate Limit sur l'achat !")
+            
+        return False
+    except Exception as e:
+        print(f"[ERROR] Echec transaction: {e}")
+        return False
+
+if __name__ == "__main__":
+    manager = EASessionManager()
+    manager.start_browser()
+    manager.login_and_intercept()

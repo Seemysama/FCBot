@@ -1,0 +1,29 @@
+{
+  "platform": "PC",
+  "targets": [
+    {
+      "rating": 83,
+      "max_buy": 850,
+      "sell_price": 950,
+      "estimated_profit": 52
+    },
+    {
+      "rating": 84,
+      "max_buy": 950,
+      "sell_price": 1050,
+      "estimated_profit": 47
+    },
+    {
+      "rating": 85,
+      "max_buy": 2600,
+      "sell_price": 2850,
+      "estimated_profit": 107
+    },
+    {
+      "rating": 86,
+      "max_buy": 5200,
+      "sell_price": 5700,
+      "estimated_profit": 215
+    }
+  ]
+}

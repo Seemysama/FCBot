@@ -1,0 +1,100 @@
+-- EXTENSIONS
+-- Nécessaire pour les UUIDs rapides et l'analyse de texte (recherche floue de joueurs)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
+-- 1. PLAYERS (Données Statiques & Méta)
+-- Table lourde en lecture, peu d'écriture. Indexée pour la recherche rapide.
+CREATE TABLE players (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ea_id BIGINT UNIQUE NOT NULL, -- L'ID interne EA Sports
+    resource_id BIGINT NOT NULL,  -- ID utilisé pour les images/assets
+    name VARCHAR(100) NOT NULL,
+    rating SMALLINT NOT NULL CHECK (rating BETWEEN 40 AND 99),
+    position VARCHAR(5) NOT NULL,
+    league_id INT NOT NULL,
+    club_id INT NOT NULL,
+    nation_id INT NOT NULL,
+    revision_type VARCHAR(50) DEFAULT 'Gold Rare', -- IF, TOTY, TOTS, etc.
+    
+    -- Seuils de trading (Configurés par l'algo ou l'humain)
+    buy_cap INT DEFAULT 0,    -- Ne jamais acheter au-dessus
+    sell_floor INT DEFAULT 0, -- Ne jamais vendre en-dessous
+    is_target BOOLEAN DEFAULT FALSE,
+    
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index pour la recherche rapide dans le Dashboard
+CREATE INDEX idx_players_search ON players USING GIN (name gin_trgm_ops);
+CREATE INDEX idx_players_market ON players (rating, league_id) WHERE is_target = TRUE;
+
+-- 2. MARKET_DATA (Séries Temporelles)
+-- Table critique. Partitionnée par temps en prod (ici simplifié).
+-- Stocke chaque "tick" de prix récupéré par les workers.
+CREATE TABLE market_snapshots (
+    time TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    player_id UUID REFERENCES players(id) ON DELETE CASCADE,
+    lowest_bin INT NOT NULL, -- Buy It Now le plus bas vu
+    bid_count INT DEFAULT 0, -- Indicateur de demande
+    volume_index FLOAT,      -- Calculé : vitesse d'écoulement des cartes
+    source VARCHAR(20) DEFAULT 'sniper_node', -- Quel type de worker a vu le prix
+    
+    PRIMARY KEY (time, player_id)
+);
+
+-- Index décroissant pour récupérer le dernier prix instantanément
+CREATE INDEX idx_market_latest ON market_snapshots (player_id, time DESC);
+
+-- 3. ACCOUNTS (Gestion des Workers/Comptes EA)
+-- Sécurisation des credentials et suivi de l'état (Banned/Active)
+CREATE TABLE accounts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    encrypted_password TEXT NOT NULL, -- Jamais de clair
+    backup_codes TEXT[], -- Codes de récupération 2FA
+    
+    proxy_host VARCHAR(50),
+    proxy_port INT,
+    user_agent_hash VARCHAR(64), -- Pour maintenir la cohérence de l'empreinte TLS
+    
+    coins_balance BIGINT DEFAULT 0,
+    transfer_list_size SMALLINT DEFAULT 0,
+    daily_request_count INT DEFAULT 0,
+    
+    status VARCHAR(20) CHECK (status IN ('ACTIVE', 'COOLDOWN', 'BANNED', 'CAPTCHA')) DEFAULT 'ACTIVE',
+    last_active TIMESTAMP WITH TIME ZONE
+);
+
+-- 4. TRANSACTIONS (Livre d'ordres)
+-- Enregistrement immuable de chaque achat/vente pour audit P&L
+CREATE TABLE trade_history (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    account_id UUID REFERENCES accounts(id),
+    player_id UUID REFERENCES players(id),
+    
+    trade_type VARCHAR(4) CHECK (trade_type IN ('BUY', 'SELL')),
+    price INT NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
+    -- Méta-données techniques
+    execution_time_ms INT, -- Temps entre la détection et l'achat (Performance Worker)
+    method VARCHAR(20) DEFAULT 'SNIPE', -- SNIPE ou BID
+    
+    profit_net INT GENERATED ALWAYS AS (
+        CASE WHEN trade_type = 'SELL' THEN (price * 0.95) - 0 -- 5% EA Tax logic placeholder
+        ELSE 0 END
+    ) STORED
+);
+
+-- VUE ANALYTIQUE : Performance par Joueur
+CREATE OR REPLACE VIEW v_target_performance AS
+SELECT 
+    p.name,
+    p.rating,
+    COUNT(t.id) as trade_volume,
+    SUM(CASE WHEN t.trade_type = 'SELL' THEN t.price * 0.95 ELSE -t.price END) as total_profit,
+    AVG(t.execution_time_ms) as avg_latency
+FROM players p
+JOIN trade_history t ON p.id = t.player_id
+GROUP BY p.id;

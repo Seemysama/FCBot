@@ -1,0 +1,16 @@
+{
+  "generated_at": "2025-12-03T01:56:39.903904",
+  "scan_count": 15,
+  "targets": [
+    {
+      "player_id": 237238,
+      "player_name": "Scott Francis McTominay",
+      "max_buy_price": 4900,
+      "target_sell_price": 6592,
+      "expected_profit": 1362,
+      "confidence": "MEDIUM",
+      "expires_at": 1764723699.903896,
+      "source": "global_scan"
+    }
+  ]
+}
