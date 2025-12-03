@@ -1,0 +1,9 @@
+{
+  "snipeMode": "aggressive",
+  "minDelay": 1.5,
+  "maxDelay": 2.5,
+  "maxBuyPrice": 10000,
+  "pauseOnBuy": 60,
+  "softBanThreshold": 3,
+  "autoSellMarkup": 30
+}

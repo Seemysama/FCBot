@@ -1,0 +1,102 @@
+{
+  "filters": [
+    {
+      "name": "PL Defenders Snipe",
+      "params": {
+        "type": "player",
+        "raretype": "1",
+        "lev": "gold",
+        "leag": 13,
+        "pos": "CB,LB,RB,LWB,RWB",
+        "maxb": 800
+      },
+      "expected_min_value": 1500,
+      "active": true
+    },
+    {
+      "name": "Ligue 1 Gold Rare",
+      "params": {
+        "type": "player",
+        "raretype": "1",
+        "lev": "gold",
+        "leag": 16,
+        "maxb": 750
+      },
+      "expected_min_value": 1200,
+      "active": true
+    },
+    {
+      "name": "Bundesliga Midfielders",
+      "params": {
+        "type": "player",
+        "raretype": "1",
+        "lev": "gold",
+        "leag": 19,
+        "pos": "CM,CDM,CAM",
+        "maxb": 850
+      },
+      "expected_min_value": 1400,
+      "active": true
+    },
+    {
+      "name": "Serie A Attackers",
+      "params": {
+        "type": "player",
+        "raretype": "1",
+        "lev": "gold",
+        "leag": 31,
+        "pos": "ST,CF,LW,RW",
+        "maxb": 900
+      },
+      "expected_min_value": 1600,
+      "active": true
+    },
+    {
+      "name": "LaLiga Gold Rare",
+      "params": {
+        "type": "player",
+        "raretype": "1",
+        "lev": "gold",
+        "leag": 53,
+        "maxb": 800
+      },
+      "expected_min_value": 1300,
+      "active": true
+    },
+    {
+      "name": "Shadow Chemistry",
+      "params": {
+        "type": "training",
+        "cat": "playStyle",
+        "playStyle": 268,
+        "maxb": 3500
+      },
+      "expected_min_value": 5000,
+      "active": false
+    },
+    {
+      "name": "Hunter Chemistry",
+      "params": {
+        "type": "training",
+        "cat": "playStyle",
+        "playStyle": 266,
+        "maxb": 3000
+      },
+      "expected_min_value": 4500,
+      "active": false
+    },
+    {
+      "name": "85+ Fodder Snipe",
+      "params": {
+        "type": "player",
+        "raretype": "1",
+        "lev": "gold",
+        "minr": 85,
+        "maxr": 86,
+        "maxb": 2000
+      },
+      "expected_min_value": 3500,
+      "active": true
+    }
+  ]
+}
