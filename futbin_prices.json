@@ -1,0 +1,108 @@
+{
+  "generated_at": "2025-12-03T16:10:14",
+  "source": "futbin_pc",
+  "platform": "PC",
+  "margin": 200,
+  "targets": [
+    {
+      "name": "Fodder 83 (PC)",
+      "rating": 83,
+      "market_price": 900,
+      "max_buy": 650,
+      "sell_price": 900,
+      "profit": 205,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 84 (PC)",
+      "rating": 84,
+      "market_price": 1000,
+      "max_buy": 750,
+      "sell_price": 1000,
+      "profit": 200,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 85 (PC)",
+      "rating": 85,
+      "market_price": 2700,
+      "max_buy": 2350,
+      "sell_price": 2700,
+      "profit": 215,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 86 (PC)",
+      "rating": 86,
+      "market_price": 4900,
+      "max_buy": 4450,
+      "sell_price": 4900,
+      "profit": 205,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 87 (PC)",
+      "rating": 87,
+      "market_price": 8200,
+      "max_buy": 7550,
+      "sell_price": 8200,
+      "profit": 240,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 88 (PC)",
+      "rating": 88,
+      "market_price": 12500,
+      "max_buy": 11650,
+      "sell_price": 12500,
+      "profit": 225,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 89 (PC)",
+      "rating": 89,
+      "market_price": 21000,
+      "max_buy": 19750,
+      "sell_price": 21000,
+      "profit": 200,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 90 (PC)",
+      "rating": 90,
+      "market_price": 30000,
+      "max_buy": 28300,
+      "sell_price": 30000,
+      "profit": 200,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 91 (PC)",
+      "rating": 91,
+      "market_price": 83000,
+      "max_buy": 78650,
+      "sell_price": 83000,
+      "profit": 200,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    },
+    {
+      "name": "Fodder 92 (PC)",
+      "rating": 92,
+      "market_price": 91500,
+      "max_buy": 86700,
+      "sell_price": 91500,
+      "profit": 225,
+      "platform": "PC",
+      "updated_at": "2025-12-03 16:10"
+    }
+  ]
+}
